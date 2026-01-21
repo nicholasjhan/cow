@@ -168,4 +168,96 @@
         const cow = document.getElementById('cow');
         const statusText = document.getElementById('status-bar');
 
-        function
+        function updateProgress() {
+            if(isClean && isBrushed && isFed && isKissed) {
+                setTimeout(() => {
+                    document.getElementById('controls').style.display = 'none';
+                    document.getElementById('proposal').style.display = 'block';
+                    statusText.textContent = "The cow has a question for you...";
+                }, 1000);
+            }
+        }
+
+        function shovelPoop() {
+            document.getElementById('poop-container').style.display = 'none';
+            statusText.textContent = "Much better! Now his hair is messy.";
+            isClean = true;
+            document.getElementById('btn-shovel').disabled = true;
+            document.getElementById('btn-brush').disabled = false;
+            updateProgress();
+        }
+
+        function brushHair() {
+            cow.classList.add('sparkle');
+            statusText.textContent = "Looking sharp! But he's hungry.";
+            setTimeout(() => cow.classList.remove('sparkle'), 1000);
+            
+            isBrushed = true;
+            document.getElementById('btn-brush').disabled = true;
+            document.getElementById('btn-feed').disabled = false;
+            updateProgress();
+        }
+
+        function feedCow() {
+            cow.classList.add('chew');
+            statusText.textContent = "Yum! Now give him a little smooch.";
+            setTimeout(() => cow.classList.remove('chew'), 2000);
+            
+            isFed = true;
+            document.getElementById('btn-feed').disabled = true;
+            document.getElementById('btn-kiss').disabled = false;
+            updateProgress();
+        }
+
+        function kissCow() {
+            cow.textContent = "😍";
+            statusText.textContent = "He loves it!";
+            setTimeout(() => cow.textContent = "🐮", 1500);
+            
+            isKissed = true;
+            document.getElementById('btn-kiss').disabled = true;
+            updateProgress();
+        }
+
+        function sayNo() {
+            // Change cow to crying
+            cow.textContent = "😭";
+            cow.classList.add('crying');
+            document.body.style.backgroundColor = "#263238"; // Dark gloomy background
+            document.getElementById('game-container').style.background = "#cfd8dc";
+            statusText.textContent = "Mooooo... (Heartbroken)";
+            
+            // Hide the buttons so they can't change their mind
+            document.querySelector('.yes-btn').style.display = 'none';
+            document.querySelector('.no-btn').style.display = 'none';
+        }
+
+        function sayYes() {
+            const overlay = document.getElementById('kiss-overlay');
+            overlay.style.display = 'flex';
+            
+            // Generate a bunch of kisses
+            for(let i=0; i<50; i++) {
+                let kiss = document.createElement('div');
+                kiss.classList.add('big-kiss');
+                kiss.textContent = "💋";
+                // Random positioning/size
+                kiss.style.transform = `rotate(${Math.random() * 360}deg)`;
+                kiss.style.fontSize = Math.floor(Math.random() * 50 + 30) + "px";
+                overlay.appendChild(kiss);
+            }
+            
+            // Add a final message in the overlay
+            let msg = document.createElement('h1');
+            msg.textContent = "MOOOO! (I LOVE YOU!)";
+            msg.style.color = "#d32f2f";
+            msg.style.background = "white";
+            msg.style.padding = "20px";
+            msg.style.borderRadius = "20px";
+            msg.style.position = "absolute";
+            msg.style.zIndex = "1000";
+            overlay.appendChild(msg);
+        }
+    </script>
+</body>
+</html>
