@@ -19,7 +19,6 @@
         }
 
         #game-container {
-            /* Made background transparent so giant cow looks cool */
             background: rgba(255, 255, 255, 0.9);
             padding: 40px;
             border-radius: 20px;
@@ -44,16 +43,14 @@
 
         #cow {
             font-size: 100px; /* Starting size */
-            transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.5s;
             cursor: pointer;
             line-height: 1;
-            
-            /* This makes sure the cow stays centered as he grows huge */
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            z-index: 1; /* Low z-index so he stays BEHIND buttons */
+            z-index: 1; 
             white-space: nowrap;
         }
 
@@ -63,7 +60,7 @@
             font-size: 40px;
             bottom: 10px;
             cursor: pointer;
-            z-index: 30; /* Initial poop stays on top */
+            z-index: 30;
         }
         #poop1 { left: 20px; }
         #poop2 { right: 20px; }
@@ -72,15 +69,23 @@
         /* Endless Poop Styling */
         .endless-poop {
             position: fixed;
-            z-index: 5; /* Behind the main container but above background */
-            pointer-events: none; /* Let clicks pass through */
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Floating Sparkles for Brush */
+        .temp-sparkle {
+            position: absolute;
+            font-size: 30px;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 20;
         }
 
         /* Effects */
-        .sparkle { animation: spin 1s linear; }
         .chew { animation: bounce 0.2s alternate; }
-        /* New chaotic wiggle animation for saying NO */
         .wiggling { animation: wiggle 0.2s infinite linear; }
+        .happy-tilt { transform: translate(-50%, -50%) rotate(15deg) !important; }
 
         #status-bar {
             margin-bottom: 20px;
@@ -90,18 +95,13 @@
             font-weight: bold;
             position: relative;
             z-index: 20;
-            background: rgba(255,255,255,0.8); /* Readability background */
+            background: rgba(255,255,255,0.8);
             padding: 5px;
             border-radius: 10px;
         }
 
-        /* Controls Area */
-        #controls {
-            position: relative;
-            z-index: 50; /* Super high z-index so buttons are always clickable */
-        }
+        #controls { position: relative; z-index: 50; }
 
-        /* Buttons */
         .action-btn {
             background-color: #8bc34a;
             border: none;
@@ -117,7 +117,6 @@
         .action-btn:active { transform: scale(0.95); }
         .action-btn:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
 
-        /* Valentine Proposal Section */
         #proposal {
             display: none;
             margin-top: 20px;
@@ -126,7 +125,7 @@
             border-radius: 15px;
             border: 2px solid #ffc107;
             position: relative;
-            z-index: 100; /* Highest priority */
+            z-index: 100;
         }
 
         .yes-btn { background-color: #e91e63; font-size: 1.5rem; padding: 15px 30px; }
@@ -141,20 +140,40 @@
             height: 100%;
             background-color: rgba(255, 192, 203, 0.9);
             display: none;
-            flex-wrap: wrap;
-            justify-content: space-around;
+            flex-direction: column; /* Stack items vertically */
+            justify-content: center;
             align-items: center;
             z-index: 999;
             overflow: hidden;
         }
-        .big-kiss { font-size: 80px; animation: popIn 0.5s ease-out; }
+        
+        .big-kiss { position: absolute; font-size: 80px; animation: popIn 0.5s ease-out; }
+
+        /* The Call Button */
+        #call-btn {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 4px solid white;
+            cursor: pointer;
+            z-index: 1001;
+            text-decoration: none;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
 
         /* Animations */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes floatUp { 
+            0% { opacity: 1; transform: translateY(0) scale(1); } 
+            100% { opacity: 0; transform: translateY(-50px) scale(1.5); } 
+        }
         @keyframes bounce { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.1); } }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
-        /* Chaotic Wiggle - ensuring it stays centered while wiggling */
         @keyframes wiggle {
             0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
             25% { transform: translate(-50%, -50%) rotate(-10deg) scale(1.1); }
@@ -203,16 +222,13 @@
         let isBrushed = false;
         let isFed = false;
         let isKissed = false;
-        
-        // Counter for feeding
         let feedCount = 0;
         const feedsRequired = 20;
-
-        // Poop interval
         let poopLoop;
 
         const cow = document.getElementById('cow');
         const statusText = document.getElementById('status-bar');
+        const cowArea = document.getElementById('cow-area');
 
         function updateProgress() {
             if(isClean && isBrushed && isFed && isKissed) {
@@ -234,9 +250,30 @@
         }
 
         function brushHair() {
-            cow.classList.add('sparkle');
+            // New Animation: Tilt head and spawn sparkles
+            cow.classList.add('happy-tilt');
+            
+            // Create 5 sparkles
+            for(let i=0; i<5; i++) {
+                setTimeout(() => {
+                    let sparkle = document.createElement('div');
+                    sparkle.textContent = "✨";
+                    sparkle.classList.add('temp-sparkle');
+                    // Random positions around the cow
+                    let randomX = Math.random() * 100 - 50; 
+                    let randomY = Math.random() * 100 - 50;
+                    sparkle.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                    cowArea.appendChild(sparkle);
+                    
+                    // Cleanup sparkle div after animation
+                    setTimeout(() => sparkle.remove(), 1000);
+                }, i * 100);
+            }
+
             statusText.textContent = "Looking sharp! But he's hungry.";
-            setTimeout(() => cow.classList.remove('sparkle'), 1000);
+            
+            // Remove tilt after 1 second
+            setTimeout(() => cow.classList.remove('happy-tilt'), 1000);
             
             isBrushed = true;
             document.getElementById('btn-brush').disabled = true;
@@ -246,14 +283,10 @@
 
         function feedCow() {
             feedCount++;
-            
-            // Cow grows 40px every click. 
             let newSize = 100 + (feedCount * 40); 
             cow.style.fontSize = newSize + "px";
-            
-            // Animation
             cow.classList.remove('chew'); 
-            void cow.offsetWidth; // trigger reflow
+            void cow.offsetWidth; 
             cow.classList.add('chew');
 
             if (feedCount < feedsRequired) {
@@ -271,34 +304,31 @@
             cow.textContent = "😍";
             statusText.textContent = "He loves it!";
             setTimeout(() => cow.textContent = "🐮", 1500);
-            
             isKissed = true;
             document.getElementById('btn-kiss').disabled = true;
             updateProgress();
         }
 
-        // Function to spawn a single poop somewhere on screen
         function spawnPoop() {
             const poop = document.createElement('div');
             poop.textContent = '💩';
             poop.classList.add('endless-poop');
-            // Random size between 30px and 80px
             poop.style.fontSize = (Math.random() * 50 + 30) + 'px';
-            // Random position
             poop.style.left = Math.random() * window.innerWidth + 'px';
             poop.style.top = Math.random() * window.innerHeight + 'px';
-            // Random rotation
             poop.style.transform = `rotate(${Math.random() * 360}deg)`;
             document.body.appendChild(poop);
         }
 
         function sayNo() {
             cow.textContent = "😭";
-            // Remove old animations and add chaotic wiggle
-            cow.classList.remove('chew', 'sparkle');
+            cow.classList.remove('chew', 'happy-tilt');
             cow.classList.add('wiggling');
             
-            // Change colors to messy brown
+            // SLOWLY SHRINK THE COW
+            cow.style.transition = "font-size 5s ease, transform 0.2s"; // Override transition
+            cow.style.fontSize = "0px"; // Shrink to nothing
+            
             document.body.style.backgroundColor = "#5d4037"; 
             document.getElementById('game-container').style.background = "#d7ccc8";
             
@@ -308,7 +338,6 @@
             document.querySelector('.yes-btn').style.display = 'none';
             document.querySelector('.no-btn').style.display = 'none';
             
-            // Start the endless pooping! (Spawn one every 100ms)
             poopLoop = setInterval(spawnPoop, 100);
         }
 
@@ -316,10 +345,14 @@
             const overlay = document.getElementById('kiss-overlay');
             overlay.style.display = 'flex';
             
+            // Spawning background kisses
             for(let i=0; i<50; i++) {
                 let kiss = document.createElement('div');
                 kiss.classList.add('big-kiss');
                 kiss.textContent = "💋";
+                // Random position across whole screen
+                kiss.style.left = Math.random() * 100 + "vw";
+                kiss.style.top = Math.random() * 100 + "vh";
                 kiss.style.transform = `rotate(${Math.random() * 360}deg)`;
                 kiss.style.fontSize = Math.floor(Math.random() * 50 + 30) + "px";
                 overlay.appendChild(kiss);
@@ -331,9 +364,20 @@
             msg.style.background = "white";
             msg.style.padding = "20px";
             msg.style.borderRadius = "20px";
-            msg.style.position = "absolute";
             msg.style.zIndex = "1000";
             overlay.appendChild(msg);
+
+            // CREATE THE CALL BUTTON
+            let callBtn = document.createElement('button');
+            callBtn.id = 'call-btn';
+            callBtn.textContent = "Call Me Maybe? 📞";
+            
+            // ⚠️ EDIT THIS NUMBER BELOW ⚠️
+            callBtn.onclick = function() {
+                window.location.href = "tel:9497013709"; 
+            };
+            
+            overlay.appendChild(callBtn);
         }
     </script>
 </body>
