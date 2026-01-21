@@ -15,6 +15,7 @@
             margin: 0;
             overflow: hidden;
             text-align: center;
+            transition: background-color 1s;
         }
 
         #game-container {
@@ -27,6 +28,7 @@
             z-index: 10;
             max-width: 500px;
             width: 90%;
+            transition: background 1s;
         }
 
         h1 { color: #5d4037; position: relative; z-index: 20; }
@@ -61,16 +63,24 @@
             font-size: 40px;
             bottom: 10px;
             cursor: pointer;
-            z-index: 30; /* Poop stays on top */
+            z-index: 30; /* Initial poop stays on top */
         }
         #poop1 { left: 20px; }
         #poop2 { right: 20px; }
         #poop3 { bottom: -10px; left: 50%; transform: translateX(-50%); }
+        
+        /* Endless Poop Styling */
+        .endless-poop {
+            position: fixed;
+            z-index: 5; /* Behind the main container but above background */
+            pointer-events: none; /* Let clicks pass through */
+        }
 
         /* Effects */
         .sparkle { animation: spin 1s linear; }
         .chew { animation: bounce 0.2s alternate; }
-        .crying { animation: shake 0.5s infinite; }
+        /* New chaotic wiggle animation for saying NO */
+        .wiggling { animation: wiggle 0.2s infinite linear; }
 
         #status-bar {
             margin-bottom: 20px;
@@ -142,13 +152,16 @@
         /* Animations */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes bounce { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.1); } }
-        @keyframes shake { 
-            0% { transform: translate(-50%, -50%) translateX(0); } 
-            25% { transform: translate(-50%, -50%) translateX(-10px) rotate(-5deg); } 
-            75% { transform: translate(-50%, -50%) translateX(10px) rotate(5deg); } 
-            100% { transform: translate(-50%, -50%) translateX(0); } 
-        }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        
+        /* Chaotic Wiggle - ensuring it stays centered while wiggling */
+        @keyframes wiggle {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            25% { transform: translate(-50%, -50%) rotate(-10deg) scale(1.1); }
+            50% { transform: translate(-50%, -50%) rotate(10deg) scale(0.9); }
+            75% { transform: translate(-50%, -50%) rotate(-5deg) scale(1.2); }
+            100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -195,6 +208,9 @@
         let feedCount = 0;
         const feedsRequired = 20;
 
+        // Poop interval
+        let poopLoop;
+
         const cow = document.getElementById('cow');
         const statusText = document.getElementById('status-bar');
 
@@ -231,8 +247,7 @@
         function feedCow() {
             feedCount++;
             
-            // MATH UPDATE: Cow grows 40px every click now. 
-            // 20 clicks * 40px = 800px added size (Huge!)
+            // Cow grows 40px every click. 
             let newSize = 100 + (feedCount * 40); 
             cow.style.fontSize = newSize + "px";
             
@@ -242,7 +257,6 @@
             cow.classList.add('chew');
 
             if (feedCount < feedsRequired) {
-                // REMOVED THE COUNTER NUMBERS HERE
                 statusText.textContent = "Munch munch! He's getting HUGE!";
             } else {
                 statusText.textContent = "He is FULL! Now give him a kiss.";
@@ -263,14 +277,39 @@
             updateProgress();
         }
 
+        // Function to spawn a single poop somewhere on screen
+        function spawnPoop() {
+            const poop = document.createElement('div');
+            poop.textContent = '💩';
+            poop.classList.add('endless-poop');
+            // Random size between 30px and 80px
+            poop.style.fontSize = (Math.random() * 50 + 30) + 'px';
+            // Random position
+            poop.style.left = Math.random() * window.innerWidth + 'px';
+            poop.style.top = Math.random() * window.innerHeight + 'px';
+            // Random rotation
+            poop.style.transform = `rotate(${Math.random() * 360}deg)`;
+            document.body.appendChild(poop);
+        }
+
         function sayNo() {
             cow.textContent = "😭";
-            cow.classList.add('crying');
-            document.body.style.backgroundColor = "#263238"; 
-            document.getElementById('game-container').style.background = "#cfd8dc";
-            statusText.textContent = "Mooooo... (Heartbroken)";
+            // Remove old animations and add chaotic wiggle
+            cow.classList.remove('chew', 'sparkle');
+            cow.classList.add('wiggling');
+            
+            // Change colors to messy brown
+            document.body.style.backgroundColor = "#5d4037"; 
+            document.getElementById('game-container').style.background = "#d7ccc8";
+            
+            statusText.textContent = "OH NO! YOU BROKE HIS HEART! 💩";
+            statusText.style.color = "#bf360c";
+
             document.querySelector('.yes-btn').style.display = 'none';
             document.querySelector('.no-btn').style.display = 'none';
+            
+            // Start the endless pooping! (Spawn one every 100ms)
+            poopLoop = setInterval(spawnPoop, 100);
         }
 
         function sayYes() {
