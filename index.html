@@ -18,7 +18,8 @@
         }
 
         #game-container {
-            background: white;
+            /* Made background transparent so giant cow looks cool */
+            background: rgba(255, 255, 255, 0.9);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -26,15 +27,13 @@
             z-index: 10;
             max-width: 500px;
             width: 90%;
-            /* Allow container to grow if cow gets huge */
-            transition: all 0.3s ease;
         }
 
-        h1 { color: #5d4037; }
+        h1 { color: #5d4037; position: relative; z-index: 20; }
         
         #cow-area {
             position: relative;
-            height: 300px; /* Made taller for big cow */
+            height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -43,9 +42,17 @@
 
         #cow {
             font-size: 100px; /* Starting size */
-            transition: font-size 0.2s ease, transform 0.2s;
+            transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             line-height: 1;
+            
+            /* This makes sure the cow stays centered as he grows huge */
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1; /* Low z-index so he stays BEHIND buttons */
+            white-space: nowrap;
         }
 
         /* Poop styling */
@@ -54,6 +61,7 @@
             font-size: 40px;
             bottom: 10px;
             cursor: pointer;
+            z-index: 30; /* Poop stays on top */
         }
         #poop1 { left: 20px; }
         #poop2 { right: 20px; }
@@ -70,6 +78,17 @@
             color: #555;
             min-height: 1.5em;
             font-weight: bold;
+            position: relative;
+            z-index: 20;
+            background: rgba(255,255,255,0.8); /* Readability background */
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        /* Controls Area */
+        #controls {
+            position: relative;
+            z-index: 50; /* Super high z-index so buttons are always clickable */
         }
 
         /* Buttons */
@@ -83,9 +102,10 @@
             font-size: 1rem;
             cursor: pointer;
             transition: transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .action-btn:active { transform: scale(0.95); }
-        .action-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .action-btn:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
 
         /* Valentine Proposal Section */
         #proposal {
@@ -95,6 +115,8 @@
             padding: 20px;
             border-radius: 15px;
             border: 2px solid #ffc107;
+            position: relative;
+            z-index: 100; /* Highest priority */
         }
 
         .yes-btn { background-color: #e91e63; font-size: 1.5rem; padding: 15px 30px; }
@@ -119,12 +141,12 @@
 
         /* Animations */
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+        @keyframes bounce { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.1); } }
         @keyframes shake { 
-            0% { transform: translateX(0); } 
-            25% { transform: translateX(-10px) rotate(-5deg); } 
-            75% { transform: translateX(10px) rotate(5deg); } 
-            100% { transform: translateX(0); } 
+            0% { transform: translate(-50%, -50%) translateX(0); } 
+            25% { transform: translate(-50%, -50%) translateX(-10px) rotate(-5deg); } 
+            75% { transform: translate(-50%, -50%) translateX(10px) rotate(5deg); } 
+            100% { transform: translate(-50%, -50%) translateX(0); } 
         }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
     </style>
@@ -209,20 +231,21 @@
         function feedCow() {
             feedCount++;
             
-            // Make cow bigger! Start at 100px, add 5px per click
-            let newSize = 100 + (feedCount * 8); 
+            // MATH UPDATE: Cow grows 40px every click now. 
+            // 20 clicks * 40px = 800px added size (Huge!)
+            let newSize = 100 + (feedCount * 40); 
             cow.style.fontSize = newSize + "px";
             
             // Animation
-            cow.classList.remove('chew'); // reset animation
+            cow.classList.remove('chew'); 
             void cow.offsetWidth; // trigger reflow
             cow.classList.add('chew');
 
             if (feedCount < feedsRequired) {
-                let left = feedsRequired - feedCount;
-                statusText.textContent = `Munch munch! He's growing! (${feedCount}/${feedsRequired})`;
+                // REMOVED THE COUNTER NUMBERS HERE
+                statusText.textContent = "Munch munch! He's getting HUGE!";
             } else {
-                statusText.textContent = "He is FULL and HUGE! Now give him a kiss.";
+                statusText.textContent = "He is FULL! Now give him a kiss.";
                 isFed = true;
                 document.getElementById('btn-feed').disabled = true;
                 document.getElementById('btn-kiss').disabled = false;
