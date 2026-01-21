@@ -1,270 +1,244 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww15040\viewh17260\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moo My Valentine</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-    <meta charset="UTF-8">\
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-    <title>Moo My Valentine</title>\
-    <style>\
-        body \{\
-            font-family: 'Comic Sans MS', cursive, sans-serif;\
-            background-color: #e0f7fa;\
-            display: flex;\
-            justify-content: center;\
-            align-items: center;\
-            height: 100vh;\
-            margin: 0;\
-            overflow: hidden;\
-            text-align: center;\
-        \}\
-\
-        #game-container \{\
-            background: white;\
-            padding: 40px;\
-            border-radius: 20px;\
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);\
-            position: relative;\
-            z-index: 10;\
-            max-width: 500px;\
-            width: 90%;\
-        \}\
-\
-        h1 \{ color: #5d4037; \}\
-        \
-        #cow-area \{\
-            position: relative;\
-            height: 200px;\
-            display: flex;\
-            justify-content: center;\
-            align-items: center;\
-            margin-bottom: 20px;\
-        \}\
-\
-        #cow \{\
-            font-size: 100px;\
-            transition: all 0.3s ease;\
-            cursor: pointer;\
-        \}\
-\
-        /* Poop styling */\
-        .poop \{\
-            position: absolute;\
-            font-size: 40px;\
-            bottom: 10px;\
-            cursor: pointer;\
-        \}\
-        #poop1 \{ left: 20px; \}\
-        #poop2 \{ right: 20px; \}\
-        #poop3 \{ bottom: -10px; left: 50%; transform: translateX(-50%); \}\
-\
-        /* Effects */\
-        .sparkle \{ animation: spin 1s linear; \}\
-        .chew \{ animation: bounce 0.5s infinite alternate; \}\
-        .crying \{ animation: shake 0.5s infinite; \}\
-\
-        #status-bar \{\
-            margin-bottom: 20px;\
-            font-size: 1.2rem;\
-            color: #555;\
-            min-height: 1.5em;\
-        \}\
-\
-        /* Buttons */\
-        .action-btn \{\
-            background-color: #8bc34a;\
-            border: none;\
-            color: white;\
-            padding: 10px 20px;\
-            margin: 5px;\
-            border-radius: 10px;\
-            font-size: 1rem;\
-            cursor: pointer;\
-            transition: transform 0.1s;\
-        \}\
-        .action-btn:active \{ transform: scale(0.95); \}\
-        .action-btn:disabled \{ background-color: #ccc; cursor: not-allowed; \}\
-\
-        /* Valentine Proposal Section */\
-        #proposal \{\
-            display: none;\
-            margin-top: 20px;\
-            background: #ffebee;\
-            padding: 20px;\
-            border-radius: 15px;\
-            border: 2px solid #ffc107;\
-        \}\
-\
-        .yes-btn \{ background-color: #e91e63; font-size: 1.5rem; padding: 15px 30px; \}\
-        .no-btn \{ background-color: #9e9e9e; font-size: 1rem; padding: 10px 20px; \}\
-\
-        /* Full Screen Overlay for YES */\
-        #kiss-overlay \{\
-            position: fixed;\
-            top: 0;\
-            left: 0;\
-            width: 100%;\
-            height: 100%;\
-            background-color: rgba(255, 192, 203, 0.9);\
-            display: none;\
-            flex-wrap: wrap;\
-            justify-content: space-around;\
-            align-items: center;\
-            z-index: 999;\
-            overflow: hidden;\
-        \}\
-        .big-kiss \{ font-size: 80px; animation: popIn 0.5s ease-out; \}\
-\
-        /* Animations */\
-        @keyframes spin \{ 100% \{ transform: rotate(360deg); \} \}\
-        @keyframes bounce \{ from \{ transform: translateY(0); \} to \{ transform: translateY(-20px); \} \}\
-        @keyframes shake \{ \
-            0% \{ transform: translateX(0); \} \
-            25% \{ transform: translateX(-10px) rotate(-5deg); \} \
-            75% \{ transform: translateX(10px) rotate(5deg); \} \
-            100% \{ transform: translateX(0); \} \
-        \}\
-        @keyframes popIn \{ from \{ transform: scale(0); \} to \{ transform: scale(1); \} \}\
-    </style>\
-</head>\
-<body>\
-\
-    <div id="game-container">\
-        <h1>Take Care of the Cow!</h1>\
-        \
-        <div id="cow-area">\
-            <div id="cow">\uc0\u55357 \u56366 </div>\
-            <div id="poop-container">\
-                <div class="poop" id="poop1">\uc0\u55357 \u56489 </div>\
-                <div class="poop" id="poop2">\uc0\u55357 \u56489 </div>\
-                <div class="poop" id="poop3">\uc0\u55357 \u56489 </div>\
-            </div>\
-        </div>\
-\
-        <div id="status-bar">The cow is messy! Shovel the poop first.</div>\
-\
-        <div id="controls">\
-            <button class="action-btn" id="btn-shovel" onclick="shovelPoop()">Shovel Poop \uc0\u55358 \u56825 </button>\
-            <button class="action-btn" id="btn-brush" onclick="brushHair()" disabled>Brush Hair \uc0\u55357 \u56716 \u65039 </button>\
-            <button class="action-btn" id="btn-feed" onclick="feedCow()" disabled>Feed \uc0\u55356 \u57150 </button>\
-            <button class="action-btn" id="btn-kiss" onclick="kissCow()" disabled>Give Kiss \uc0\u55357 \u56459 </button>\
-        </div>\
-\
-        <div id="proposal">\
-            <h2>\uc0\u55357 \u56366 : "You take such good care of me..."</h2>\
-            <p><strong>Will you be my Valentine?</strong></p>\
-            <button class="action-btn yes-btn" onclick="sayYes()">YES!</button>\
-            <button class="action-btn no-btn" onclick="sayNo()">No...</button>\
-        </div>\
-    </div>\
-\
-    <div id="kiss-overlay"></div>\
-\
-    <script>\
-        // Game State\
-        let isClean = false;\
-        let isBrushed = false;\
-        let isFed = false;\
-        let isKissed = false;\
-\
-        const cow = document.getElementById('cow');\
-        const statusText = document.getElementById('status-bar');\
-\
-        function updateProgress() \{\
-            if(isClean && isBrushed && isFed && isKissed) \{\
-                setTimeout(() => \{\
-                    document.getElementById('controls').style.display = 'none';\
-                    document.getElementById('proposal').style.display = 'block';\
-                    statusText.textContent = "The cow has a question for you...";\
-                \}, 1000);\
-            \}\
-        \}\
-\
-        function shovelPoop() \{\
-            document.getElementById('poop-container').style.display = 'none';\
-            statusText.textContent = "Much better! Now his hair is messy.";\
-            isClean = true;\
-            document.getElementById('btn-shovel').disabled = true;\
-            document.getElementById('btn-brush').disabled = false;\
-            updateProgress();\
-        \}\
-\
-        function brushHair() \{\
-            cow.classList.add('sparkle');\
-            statusText.textContent = "Looking sharp! But he's hungry.";\
-            setTimeout(() => cow.classList.remove('sparkle'), 1000);\
-            \
-            isBrushed = true;\
-            document.getElementById('btn-brush').disabled = true;\
-            document.getElementById('btn-feed').disabled = false;\
-            updateProgress();\
-        \}\
-\
-        function feedCow() \{\
-            cow.classList.add('chew');\
-            statusText.textContent = "Yum! Now give him a little smooch.";\
-            setTimeout(() => cow.classList.remove('chew'), 2000);\
-            \
-            isFed = true;\
-            document.getElementById('btn-feed').disabled = true;\
-            document.getElementById('btn-kiss').disabled = false;\
-            updateProgress();\
-        \}\
-\
-        function kissCow() \{\
-            cow.textContent = "\uc0\u55357 \u56845 ";\
-            statusText.textContent = "He loves it!";\
-            setTimeout(() => cow.textContent = "\uc0\u55357 \u56366 ", 1500);\
-            \
-            isKissed = true;\
-            document.getElementById('btn-kiss').disabled = true;\
-            updateProgress();\
-        \}\
-\
-        function sayNo() \{\
-            // Change cow to crying\
-            cow.textContent = "\uc0\u55357 \u56877 ";\
-            cow.classList.add('crying');\
-            document.body.style.backgroundColor = "#263238"; // Dark gloomy background\
-            document.getElementById('game-container').style.background = "#cfd8dc";\
-            statusText.textContent = "Mooooo... (Heartbroken)";\
-            \
-            // Hide the buttons so they can't change their mind\
-            document.querySelector('.yes-btn').style.display = 'none';\
-            document.querySelector('.no-btn').style.display = 'none';\
-        \}\
-\
-        function sayYes() \{\
-            const overlay = document.getElementById('kiss-overlay');\
-            overlay.style.display = 'flex';\
-            \
-            // Generate a bunch of kisses\
-            for(let i=0; i<50; i++) \{\
-                let kiss = document.createElement('div');\
-                kiss.classList.add('big-kiss');\
-                kiss.textContent = "\uc0\u55357 \u56459 ";\
-                // Random positioning/size\
-                kiss.style.transform = `rotate($\{Math.random() * 360\}deg)`;\
-                kiss.style.fontSize = Math.floor(Math.random() * 50 + 30) + "px";\
-                overlay.appendChild(kiss);\
-            \}\
-            \
-            // Add a final message in the overlay\
-            let msg = document.createElement('h1');\
-            msg.textContent = "MOOOO! (I LOVE YOU!)";\
-            msg.style.color = "#d32f2f";\
-            msg.style.background = "white";\
-            msg.style.padding = "20px";\
-            msg.style.borderRadius = "20px";\
-            msg.style.position = "absolute";\
-            msg.style.zIndex = "1000";\
-            overlay.appendChild(msg);\
-        \}\
-    </script>\
-</body>\
-</html>}
+        #game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 { color: #5d4037; }
+        
+        #cow-area {
+            position: relative;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #cow {
+            font-size: 100px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* Poop styling */
+        .poop {
+            position: absolute;
+            font-size: 40px;
+            bottom: 10px;
+            cursor: pointer;
+        }
+        #poop1 { left: 20px; }
+        #poop2 { right: 20px; }
+        #poop3 { bottom: -10px; left: 50%; transform: translateX(-50%); }
+
+        /* Effects */
+        .sparkle { animation: spin 1s linear; }
+        .chew { animation: bounce 0.5s infinite alternate; }
+        .crying { animation: shake 0.5s infinite; }
+
+        #status-bar {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #555;
+            min-height: 1.5em;
+        }
+
+        /* Buttons */
+        .action-btn {
+            background-color: #8bc34a;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Valentine Proposal Section */
+        #proposal {
+            display: none;
+            margin-top: 20px;
+            background: #ffebee;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ffc107;
+        }
+
+        .yes-btn { background-color: #e91e63; font-size: 1.5rem; padding: 15px 30px; }
+        .no-btn { background-color: #9e9e9e; font-size: 1rem; padding: 10px 20px; }
+
+        /* Full Screen Overlay for YES */
+        #kiss-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 192, 203, 0.9);
+            display: none;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .big-kiss { font-size: 80px; animation: popIn 0.5s ease-out; }
+
+        /* Animations */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+        @keyframes shake { 
+            0% { transform: translateX(0); } 
+            25% { transform: translateX(-10px) rotate(-5deg); } 
+            75% { transform: translateX(10px) rotate(5deg); } 
+            100% { transform: translateX(0); } 
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>Take Care of the Cow!</h1>
+        
+        <div id="cow-area">
+            <div id="cow">🐮</div>
+            <div id="poop-container">
+                <div class="poop" id="poop1">💩</div>
+                <div class="poop" id="poop2">💩</div>
+                <div class="poop" id="poop3">💩</div>
+            </div>
+        </div>
+
+        <div id="status-bar">The cow is messy! Shovel the poop first.</div>
+
+        <div id="controls">
+            <button class="action-btn" id="btn-shovel" onclick="shovelPoop()">Shovel Poop 🧹</button>
+            <button class="action-btn" id="btn-brush" onclick="brushHair()" disabled>Brush Hair 🖌️</button>
+            <button class="action-btn" id="btn-feed" onclick="feedCow()" disabled>Feed 🌾</button>
+            <button class="action-btn" id="btn-kiss" onclick="kissCow()" disabled>Give Kiss 💋</button>
+        </div>
+
+        <div id="proposal">
+            <h2>🐮: "You take such good care of me..."</h2>
+            <p><strong>Will you be my Valentine?</strong></p>
+            <button class="action-btn yes-btn" onclick="sayYes()">YES!</button>
+            <button class="action-btn no-btn" onclick="sayNo()">No...</button>
+        </div>
+    </div>
+
+    <div id="kiss-overlay"></div>
+
+    <script>
+        // Game State
+        let isClean = false;
+        let isBrushed = false;
+        let isFed = false;
+        let isKissed = false;
+
+        const cow = document.getElementById('cow');
+        const statusText = document.getElementById('status-bar');
+
+        function updateProgress() {
+            if(isClean && isBrushed && isFed && isKissed) {
+                setTimeout(() => {
+                    document.getElementById('controls').style.display = 'none';
+                    document.getElementById('proposal').style.display = 'block';
+                    statusText.textContent = "The cow has a question for you...";
+                }, 1000);
+            }
+        }
+
+        function shovelPoop() {
+            document.getElementById('poop-container').style.display = 'none';
+            statusText.textContent = "Much better! Now his hair is messy.";
+            isClean = true;
+            document.getElementById('btn-shovel').disabled = true;
+            document.getElementById('btn-brush').disabled = false;
+            updateProgress();
+        }
+
+        function brushHair() {
+            cow.classList.add('sparkle');
+            statusText.textContent = "Looking sharp! But he's hungry.";
+            setTimeout(() => cow.classList.remove('sparkle'), 1000);
+            
+            isBrushed = true;
+            document.getElementById('btn-brush').disabled = true;
+            document.getElementById('btn-feed').disabled = false;
+            updateProgress();
+        }
+
+        function feedCow() {
+            cow.classList.add('chew');
+            statusText.textContent = "Yum! Now give him a little smooch.";
+            setTimeout(() => cow.classList.remove('chew'), 2000);
+            
+            isFed = true;
+            document.getElementById('btn-feed').disabled = true;
+            document.getElementById('btn-kiss').disabled = false;
+            updateProgress();
+        }
+
+        function kissCow() {
+            cow.textContent = "😍";
+            statusText.textContent = "He loves it!";
+            setTimeout(() => cow.textContent = "🐮", 1500);
+            
+            isKissed = true;
+            document.getElementById('btn-kiss').disabled = true;
+            updateProgress();
+        }
+
+        function sayNo() {
+            // Change cow to crying
+            cow.textContent = "😭";
+            cow.classList.add('crying');
+            document.body.style.backgroundColor = "#263238"; // Dark gloomy background
+            document.getElementById('game-container').style.background = "#cfd8dc";
+            statusText.textContent = "Mooooo... (Heartbroken)";
+            
+            // Hide the buttons so they can't change their mind
+            document.querySelector('.yes-btn').style.display = 'none';
+            document.querySelector('.no-btn').style.display = 'none';
+        }
+
+        function sayYes() {
+            const overlay = document.getElementById('kiss-overlay');
+            overlay.style.display = 'flex';
+            
+            // Generate a bunch of kisses
+            for(let i=0; i<50; i++) {
+                let kiss = document.createElement('div');
+                kiss.classList.add('big-kiss');
+                kiss.textContent = "💋";
+                // Random positioning/size
