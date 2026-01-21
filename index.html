@@ -26,13 +26,15 @@
             z-index: 10;
             max-width: 500px;
             width: 90%;
+            /* Allow container to grow if cow gets huge */
+            transition: all 0.3s ease;
         }
 
         h1 { color: #5d4037; }
         
         #cow-area {
             position: relative;
-            height: 200px;
+            height: 300px; /* Made taller for big cow */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,9 +42,10 @@
         }
 
         #cow {
-            font-size: 100px;
-            transition: all 0.3s ease;
+            font-size: 100px; /* Starting size */
+            transition: font-size 0.2s ease, transform 0.2s;
             cursor: pointer;
+            line-height: 1;
         }
 
         /* Poop styling */
@@ -58,7 +61,7 @@
 
         /* Effects */
         .sparkle { animation: spin 1s linear; }
-        .chew { animation: bounce 0.5s infinite alternate; }
+        .chew { animation: bounce 0.2s alternate; }
         .crying { animation: shake 0.5s infinite; }
 
         #status-bar {
@@ -66,6 +69,7 @@
             font-size: 1.2rem;
             color: #555;
             min-height: 1.5em;
+            font-weight: bold;
         }
 
         /* Buttons */
@@ -115,7 +119,7 @@
 
         /* Animations */
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
         @keyframes shake { 
             0% { transform: translateX(0); } 
             25% { transform: translateX(-10px) rotate(-5deg); } 
@@ -164,6 +168,10 @@
         let isBrushed = false;
         let isFed = false;
         let isKissed = false;
+        
+        // Counter for feeding
+        let feedCount = 0;
+        const feedsRequired = 20;
 
         const cow = document.getElementById('cow');
         const statusText = document.getElementById('status-bar');
@@ -199,14 +207,27 @@
         }
 
         function feedCow() {
-            cow.classList.add('chew');
-            statusText.textContent = "Yum! Now give him a little smooch.";
-            setTimeout(() => cow.classList.remove('chew'), 2000);
+            feedCount++;
             
-            isFed = true;
-            document.getElementById('btn-feed').disabled = true;
-            document.getElementById('btn-kiss').disabled = false;
-            updateProgress();
+            // Make cow bigger! Start at 100px, add 5px per click
+            let newSize = 100 + (feedCount * 8); 
+            cow.style.fontSize = newSize + "px";
+            
+            // Animation
+            cow.classList.remove('chew'); // reset animation
+            void cow.offsetWidth; // trigger reflow
+            cow.classList.add('chew');
+
+            if (feedCount < feedsRequired) {
+                let left = feedsRequired - feedCount;
+                statusText.textContent = `Munch munch! He's growing! (${feedCount}/${feedsRequired})`;
+            } else {
+                statusText.textContent = "He is FULL and HUGE! Now give him a kiss.";
+                isFed = true;
+                document.getElementById('btn-feed').disabled = true;
+                document.getElementById('btn-kiss').disabled = false;
+                updateProgress();
+            }
         }
 
         function kissCow() {
@@ -220,14 +241,11 @@
         }
 
         function sayNo() {
-            // Change cow to crying
             cow.textContent = "😭";
             cow.classList.add('crying');
-            document.body.style.backgroundColor = "#263238"; // Dark gloomy background
+            document.body.style.backgroundColor = "#263238"; 
             document.getElementById('game-container').style.background = "#cfd8dc";
             statusText.textContent = "Mooooo... (Heartbroken)";
-            
-            // Hide the buttons so they can't change their mind
             document.querySelector('.yes-btn').style.display = 'none';
             document.querySelector('.no-btn').style.display = 'none';
         }
@@ -236,18 +254,15 @@
             const overlay = document.getElementById('kiss-overlay');
             overlay.style.display = 'flex';
             
-            // Generate a bunch of kisses
             for(let i=0; i<50; i++) {
                 let kiss = document.createElement('div');
                 kiss.classList.add('big-kiss');
                 kiss.textContent = "💋";
-                // Random positioning/size
                 kiss.style.transform = `rotate(${Math.random() * 360}deg)`;
                 kiss.style.fontSize = Math.floor(Math.random() * 50 + 30) + "px";
                 overlay.appendChild(kiss);
             }
             
-            // Add a final message in the overlay
             let msg = document.createElement('h1');
             msg.textContent = "MOOOO! (I LOVE YOU!)";
             msg.style.color = "#d32f2f";
